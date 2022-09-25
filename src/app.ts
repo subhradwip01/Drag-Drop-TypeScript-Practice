@@ -46,23 +46,26 @@ function validateble(validateableInput: Validateble): boolean {
     return isValid
 }
 
-type Listener = (items: Project[]) => void
+type Listener<T> = (items: T[]) => void
 
 
 // === Classes ====
+class State<T>{
+    protected listeners: Listener<T>[] = [];
+    addListeners(listenerFn: Listener<T>) {
+        this.listeners.push(listenerFn)
+    }
+}
 // Global project state class
-class ProjectState {
-    private listeners: Listener[] = [];
+class ProjectState extends State<Project> {
+   
     private projects: Project[] = [];
     private static instance: ProjectState
 
     private constructor() {
-
+        super()
     }
 
-    addListeners(listenerFn: Listener) {
-        this.listeners.push(listenerFn)
-    }
 
     addProject(title: string, description: string, numberOfPeople: number) {
         const newPeople = new Project(

@@ -36,13 +36,18 @@ function validateble(validateableInput) {
     }
     return isValid;
 }
-class ProjectState {
+class State {
     constructor() {
         this.listeners = [];
-        this.projects = [];
     }
     addListeners(listenerFn) {
         this.listeners.push(listenerFn);
+    }
+}
+class ProjectState extends State {
+    constructor() {
+        super();
+        this.projects = [];
     }
     addProject(title, description, numberOfPeople) {
         const newPeople = new Project((new Date()).getTime(), title, description, numberOfPeople, Status.ACTIVE);
