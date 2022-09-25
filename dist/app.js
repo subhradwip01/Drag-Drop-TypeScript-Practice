@@ -75,18 +75,30 @@ class Project {
         this.status = status;
     }
 }
-class ProjectInput {
-    constructor() {
-        this.templeteElement = document.getElementById("project-input");
-        this.hostElement = document.getElementById("app");
-        const importedNode = document.importNode(this.templeteElement.content, true);
+class Component {
+    constructor(templateId, hopstElementId, insertAtStart, elementId) {
+        this.templateElement = document.getElementById(templateId);
+        this.hostElement = document.getElementById(hopstElementId);
+        const importedNode = document.importNode(this.templateElement.content, true);
         this.element = importedNode.firstElementChild;
-        this.element.id = "user-input";
+        if (elementId) {
+            this.element.id = elementId;
+        }
+        this.attach(insertAtStart);
+    }
+    attach(insertAtStart) {
+        this.hostElement.insertAdjacentElement(insertAtStart ? 'afterbegin' : 'beforeend', this.element);
+    }
+}
+class ProjectInput extends Component {
+    constructor() {
+        super("project-input", "app", true, "user-input");
         this.titleInputElement = this.element.querySelector('#title');
         this.descriptionInputElement = this.element.querySelector("#description");
         this.peopleInputElement = this.element.querySelector("#people");
-        this.confingure();
-        this.attach();
+        this.configure();
+    }
+    renderContent() {
     }
     gatherUserInput() {
         const enteredTitle = this.titleInputElement.value;
@@ -130,45 +142,40 @@ class ProjectInput {
         this.descriptionInputElement.value = "";
         this.peopleInputElement.value = "";
     }
-    attach() {
-        this.hostElement.insertAdjacentElement('afterbegin', this.element);
-    }
-    confingure() {
+    configure() {
         this.element.addEventListener("submit", this.submitHandler);
     }
 }
 __decorate([
     AutoBind
 ], ProjectInput.prototype, "submitHandler", null);
-class ProjectList {
+class ProjectList extends Component {
     constructor(type) {
+        super("project-list", "app", false, `${type}-projects`);
         this.type = type;
         this.assignedProjects = [];
-        this.templateElement = document.getElementById("project-list");
-        this.hostElement = document.getElementById("app");
-        const importedNode = document.importNode(this.templateElement.content, true);
-        this.element = importedNode.firstElementChild;
-        this.element.id = `${this.type}-projects`;
-        projectState.addListeners((projects) => {
-            this.assignedProjects = projects;
-            this.renderPreojects();
-        });
-        this.attach();
+        this.configure();
         this.renderContent();
     }
+    configure() {
+        projectState.addListeners((projects) => {
+            const releventProjects = projects.filter(prj => Status[prj.status].toLowerCase() === this.type);
+            this.assignedProjects = releventProjects;
+            this.renderPreojects();
+        });
+    }
     renderPreojects() {
-        const listEl = document.getElementById(`${this.type}-projects-list`);
-        const listeItem = document.createElement('li');
-        listeItem.textContent = this.assignedProjects[this.assignedProjects.length - 1].title;
-        listEl.appendChild(listeItem);
+        if (this.assignedProjects.length > 0) {
+            const listEl = document.getElementById(`${this.type}-projects-list`);
+            const listeItem = document.createElement('li');
+            listeItem.textContent = this.assignedProjects[this.assignedProjects.length - 1].title;
+            listEl.appendChild(listeItem);
+        }
     }
     renderContent() {
         const listId = `${this.type}-projects-list`;
         this.element.querySelector('ul').id = listId;
         this.element.querySelector('h2').textContent = `${this.type.toUpperCase()} PROJECTS`;
-    }
-    attach() {
-        this.hostElement.insertAdjacentElement("beforeend", this.element);
     }
 }
 const projectInput = new ProjectInput();
