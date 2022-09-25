@@ -172,15 +172,33 @@ class ProjectList extends Component {
     renderPreojects() {
         if (this.assignedProjects.length > 0) {
             const listEl = document.getElementById(`${this.type}-projects-list`);
-            const listeItem = document.createElement('li');
-            listeItem.textContent = this.assignedProjects[this.assignedProjects.length - 1].title;
-            listEl.appendChild(listeItem);
+            listEl.innerHTML = '';
+            for (const projectItem of this.assignedProjects) {
+                console.log(projectItem);
+                new ProjectItem(document.querySelector('ul').id, projectItem);
+            }
         }
     }
     renderContent() {
         const listId = `${this.type}-projects-list`;
         this.element.querySelector('ul').id = listId;
         this.element.querySelector('h2').textContent = `${this.type.toUpperCase()} PROJECTS`;
+    }
+}
+class ProjectItem extends Component {
+    constructor(hostId, project) {
+        super('single-project', hostId, false, project.id.toString());
+        this.project = project;
+        console.log(project);
+        this.configure();
+        this.renderContent();
+    }
+    configure() {
+    }
+    renderContent() {
+        this.element.querySelector('h2').textContent = this.project.title;
+        this.element.querySelector('h3').textContent = this.project.people.toString();
+        this.element.querySelector('p').textContent = this.project.description;
     }
 }
 const projectInput = new ProjectInput();
