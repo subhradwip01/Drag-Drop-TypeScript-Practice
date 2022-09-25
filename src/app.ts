@@ -48,6 +48,19 @@ function validateble(validateableInput: Validateble): boolean {
 
 type Listener<T> = (items: T[]) => void
 
+//===Interface===
+//Drag and drop interface
+interface Draggable{
+    dragStartHandler(event : DragEvent) : void
+    dragEndHandler(event : DragEvent) : void
+}
+
+interface DragTarget{
+    dragOverHandler(event: DragEvent) : void
+    dropHnadler(event: DragEvent) : void
+    dragLeaveHandler(event : DragEvent) : void
+
+}
 
 // === Classes ====
 class State<T>{
